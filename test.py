@@ -15,11 +15,15 @@ def make_test_files():
     f.close()
 
     f = open("test_files/test_correct.txt","w+")
-    f.write('''{ "latitude": "37.0", "user_id": 1, "name": "Chris", "longitude": "-122.0" }
-    { "latitude": "36.0", "user_id": 2, "name": "Dave", "longitude": "-120.0" }''')
+    f.write('''{ "latitude": "37.0", "user_id": 5, "name": "Chris", "longitude": "-122.0" }
+    { "latitude": "36.0", "user_id": 2, "name": "Dave", "longitude": "-120.0" }
+    { "latitude": "37.05", "user_id": 1, "name": "Alice", "longitude": "-121.95" }''')
     f.close()
 
 class TestCustomerClass(unittest.TestCase):
+    """
+    Testing Customer class.
+    """
 
     def test_constructor(self):
         customer = Customer("Alice", "10", "5.0", "-5.0")
@@ -52,9 +56,11 @@ class TestCustomerClass(unittest.TestCase):
         self.assertTrue(customer1.distance_to(customer4.location_radians) - 165.75737 < 0.001)
 
 class ReadFileMethod(unittest.TestCase):
+    """
+    Testing the read of JSON input files
+    """
 
     def test_valid_file(self):
-
         # File should exist
         with self.assertRaises(FileNotFoundError):
             read_file("Fake_file.txt")
@@ -67,13 +73,15 @@ class ReadFileMethod(unittest.TestCase):
 
         customer_list = read_file("test_files/test_correct.txt")
 
-        self.assertTrue(customer_list[0].user_id == 1 and customer_list[0].name == "Chris")
+        self.assertTrue(customer_list[0].user_id == 5 and customer_list[0].name == "Chris")
         self.assertTrue(customer_list[1].user_id == 2 and customer_list[1].name == "Dave")
+        self.assertTrue(customer_list[2].user_id == 1 and customer_list[2].name == "Alice")
 
 class FindCorrectUsersMethod(unittest.TestCase):
-
+    """
+    Testing full program logic.
+    """
     def test_program(self):
-
         input_file_path = "test_files/test_correct.txt"
         output_file_path = "test_files/test_output.csv"
         distance_from_base_margin = 100.0
@@ -85,11 +93,15 @@ class FindCorrectUsersMethod(unittest.TestCase):
         f.close()
 
         # Only one valid customer found
-        self.assertEqual(len(lines),2)
+        self.assertEqual(len(lines),3)
 
-        # Customer is the correct customer
+        # Customer is the correct customer (and lines are in order)
         user_id,name = lines[1].split(",")
         self.assertEqual(user_id,"1")
+        self.assertEqual(name,"Alice\n")
+
+        user_id,name = lines[2].split(",")
+        self.assertEqual(user_id,"5")
         self.assertEqual(name,"Chris\n")
 
 

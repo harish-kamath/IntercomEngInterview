@@ -16,3 +16,18 @@ We have some customer records in a text file (customers.txt) -- one customer per
 - Provide sample output.
 
 For more, visit: [Take-Home Assessment Blog Post](https://www.intercom.com/blog/engineer-interview-assignments/)
+
+## Code Requirements
+
+- Python 3+
+- Packages (all packages come default with Python 3+):
+    - unittest
+    - os
+    - math
+    - json
+
+Input file must be in JSON format. Additionally, each customer must have at least `latitude`,`longitude`,`user_id`, and `name` attributes. Each customer record must be on a separate line. Example formatting is shown in `Customer List.txt`.
+
+## To Install and Run
+
+Navigate to the home directory. Run `python main.py` to execute the program. Run `python test.py -bv` to execute tests. In order to change the input file, output file, maximum distance allowed from base, or base location, edit the global variables located at the top of `main.py`. By default, results are written to `Found Customers.csv`. Test results can be found in the `test_files/` folder.
