@@ -4,7 +4,7 @@ import math
 # GLOBAL VARIABLES
 input_file_path = "Customer List.txt" # relative or full path
 output_file_path = "Found Customers.csv" # relative or full path
-distance_from_base_margin = 100 # In km
+distance_from_base_margin = 100.0 # In km
 base_location = (37.788802 * (math.pi/180.0), -122.4025067 * (math.pi/180.0)) # In radians
 
 class Customer:
@@ -27,12 +27,15 @@ class Customer:
            latitude (float): Customer latitudinal location (in degrees)
            longitude (float): Customer longitudinal location (in degrees)
         """
-        self.name = str(name)
-        self.user_id = int(user_id)
+        try:
+            self.name = str(name)
+            self.user_id = int(user_id)
 
-        self.location_degrees = (float(latitude), float(longitude))
-        # Calculating location in radians using standard formula radians = degrees * pi/180
-        self.location_radians = (float(latitude)*(math.pi/180.0), float(longitude)*(math.pi/180.0))
+            self.location_degrees = (float(latitude), float(longitude))
+            # Calculating location in radians using standard formula radians = degrees * pi/180
+            self.location_radians = (float(latitude)*(math.pi/180.0), float(longitude)*(math.pi/180.0))
+        except:
+            raise ValueError("Customer with user ID {} can not be read!".format(user_id))
 
     def distance_to(self, location):
         """
@@ -76,14 +79,28 @@ def read_file(filepath):
     with open(filepath) as json_file:
         try:
             customers_list = [json.loads(record) for record in json_file]
+            customers = [Customer(c["name"],c["user_id"],c["latitude"],c["longitude"]) for c in customers_list]
+            return customers
         except:
             raise ValueError('Your JSON input can\'t be read! Please refer to README for details on how to format the JSON input.')
-        return [Customer(c["name"],c["user_id"],c["latitude"],c["longitude"]) for c in customers_list]
-    return None
 
-if __name__ == "__main__":
+def read_and_write(input_file_path,output_file_path,distance_from_base_margin,base_location):
+    """
+    Performs program function (read customers, filter based on distance, write to file)
+
+    Parameters
+    ----------
+    input_file_path : string
+        File path of Customer List JSON file with given format
+    output_file_path : string
+        File path to write results
+    distance_from_base_margin : float
+        Distance to filter customers from given base
+    base_location : tuple(float)
+        Location of base in radians
+    """
     # Read all customers into program
-    print("Reading input from {}".format(input_file_path))
+    print("\nReading input from {}".format(input_file_path))
     customers = read_file(input_file_path)
     print("Total customers found: {}".format(len(customers)))
 
@@ -99,6 +116,8 @@ if __name__ == "__main__":
         output_file.write("User ID,Name\n")
         for customer in in_range_customers:
             output_file.write("{},{}\n".format(customer.user_id, customer.name))
-    print("Results written to {}.".format(output_file_path))
+    print("Results written to {}.\n".format(output_file_path))
 
-    print("\nDone!")
+if __name__ == "__main__":
+    read_and_write(input_file_path,output_file_path,distance_from_base_margin,base_location)
+    print("Done!")
